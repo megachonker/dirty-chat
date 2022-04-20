@@ -1,13 +1,7 @@
 
 import java.io.IOException;
 import java.io.BufferedInputStream;
-import java.io.PrintWriter;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.*;
 
 
 public class Listener {
@@ -34,13 +28,15 @@ public class Listener {
           try {
             // Wait for an incoming client connection
             Socket sockclient = server.getServerSocket().accept();
-            System.out.println("Client connects.");
             // ok, we have a socket for that client.
             // Read what it sent to me as a header (I expect its pseudo as first string)
             String pseudo = headerRead(sockclient);
             // and create one Client, register it on the server.
             Client cli = new Client(pseudo, sockclient);
             server.register( cli );
+
+            System.out.print(cli.getPseudo());
+
             // Create a thread to handle client requests
             // Pass the client object and myself as server attached to this client
             Thread t = new Thread(new ClientConnect(cli, server));

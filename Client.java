@@ -1,11 +1,12 @@
 import java.net.Socket;
 
 public class Client {
-    private String pseudo;
-    private Socket sock;
+    protected String pseudo;
+    protected Socket sock;
 
     Client(String pseudo, Socket sock){
-
+        this.pseudo = pseudo;
+        this.sock   = sock;
     }
 
     protected Socket getSocket(){

@@ -1,25 +1,16 @@
 import java.io.IOException;
-import java.io.BufferedInputStream;
 import java.io.PrintWriter;
-import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.*;
 
-
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 
 public class Server {
 
 
-    private Vector<Client>clients;
-    private Vector<Message>messages;
+    private Vector<Client>clients   = new Vector<Client>();
+    private Vector<Message>messages = new Vector<Message>();
     private int port = 3100;
     private ServerSocket serverSok;
 
@@ -33,18 +24,31 @@ public class Server {
     }
 
     protected void publish(Client client, String msg){
+        //save msg
         String hdj = Calendar.getInstance().getTime().toString();
         messages.add(new Message(hdj,client,msg));
+        //broadcast msg
+        for (Client monclient : clients) {
+            send(monclient,messages.lastElement());
+        }
     }
 
     protected Vector<Message> history(Client cli){
+        //all client
+        for (Client client : clients) {
+            //all message
+            for (Message message : messages) {
+                send(client,message);
+            }
+        }
         return messages;
     }
 
 
     Server() throws IOException{
         serverSok = new ServerSocket(port);  // xtor le plus simple
-
+        Listener a = new Listener(this);
+        a.run();
     }
 
     Server(int pPort) throws IOException{
@@ -59,16 +63,17 @@ public class Server {
      * @param sock the socket to send to
      * @param message the message to send
      */
-    private void send(String pseudo,Socket sock, String message) {
+    private void send(Client client, Message message) {
         try {
-        PrintWriter writer = new PrintWriter(sock.getOutputStream());
-        writer.write("[" + pseudo + "] " + message);
-        writer.flush();
-        }
-        catch (IOException e) {
-            System.err.println("* Error trying to reach "+ pseudo +" to send a message.");
-        }
- }
+            PrintWriter writer = new PrintWriter(client.sock.getOutputStream());
+            writer.write(message.to_string()+"\n");
+            writer.flush();
+            }
+            catch (IOException e) {
+                System.err.println("* Error trying to reach "+ client.pseudo +" to send a message.");
+            }
+    }
+
 
     public ServerSocket getServerSocket() {
         return serverSok;

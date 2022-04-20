@@ -1,8 +1,6 @@
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serial;
-import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Vector;
@@ -23,6 +21,7 @@ public class ClientConnect implements Runnable {
     **/
    public void run(){
       System.err.println("Starting client management thread");
+      // myserver.getServerSocket().getSock;
       Socket clientsock = cli.getSocket();
 
       // iterate on listening incoming connections
@@ -32,13 +31,16 @@ public class ClientConnect implements Runnable {
             // reads client's request 
             String clientInput = read(clientsock);
 
-            //routing imput message
             switch (clientInput) {
                case "/hist":
                   printHistory(myserver.history(cli));
                   break;
                case "/quit":
                   myserver.unregister(cli);
+                  cli.sock.close();
+                  return;
+               case "":
+                  break;
                default:
                   myserver.publish(cli, clientInput);
                   break;
@@ -75,7 +77,7 @@ public class ClientConnect implements Runnable {
       // Return -1 if the end of the stream is reached.
       bytesRead = reader.read(buff,0,MAX_MSG_LEN);
       if (bytesRead !=-1)
-            response = new String(buff, 0, bytesRead);
+            response = new String(buff, 0, bytesRead-1);
       return response;
    }
 

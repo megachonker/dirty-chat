@@ -1,4 +1,4 @@
-import java.sql.Struct;
+
 
 public class Message {
     public Client cli;
@@ -11,7 +11,7 @@ public class Message {
         this.mesg = msg;
     }
 
-    private String to_string(){
+    public String to_string(){
         return date+"->"+cli.getPseudo()+":\t"+mesg;
     }
 
